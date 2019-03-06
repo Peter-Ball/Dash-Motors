@@ -13,16 +13,15 @@ app = dash.Dash(__name__)
 
 df = pd.read_csv("mtcars.tsv", sep='\t', skiprows=4)
 
-print(df)
-
 #Define the layout
 app.layout = html.Div([
 	html.H1(children='Dash Motors!'),
 
-	html.Div(children='This application visualizes 3 different aspects of the design of 32 car models, and shows how they relate to each other in a 3D scatter plot.'),
+	html.Div(children='This application graphs 3 different aspects of the design of 32 car models, and shows how they relate to each other in a 3D scatter plot.'),
 
+	html.P(children='Note: for the scatter plot: x: Miles/Gallon   y: Horsepower   z: Weight (Tons)'),
 	html.Div(children='''
-		Select a parameter from the drop-down and it will be visualized for you!
+		Select a parameter...
 		''', className="Instruction"),
 
 	html.Div([
@@ -40,6 +39,8 @@ app.layout = html.Div([
 
 	dcc.Graph(id='Car Graph'),
 
+	#could not figure out how to make this go away when
+	#showing the bar graphs.
 	html.Div(children='Colour switcher:'),
 
 	dcc.RadioItems(
@@ -67,9 +68,9 @@ def update_figure(value, colour):
 
 		return{
 			'data': [go.Scatter3d(
-				x=df_slices.wt,
-				y=df_slices.mpg,
-				z=df_slices.hp,
+				x=df_slices.mpg,
+				y=df_slices.hp,
+				z=df_slices.wt,
 				text=df_slices.model,
 				mode='markers',
 				marker=dict(
@@ -80,8 +81,6 @@ def update_figure(value, colour):
 					)
 				)],
 			'layout': go.Layout(
-				xaxis={'title': 'weight'},
-				yaxis={'title': 'Miles/Gallon'}
 			)
 		}
 	else:
