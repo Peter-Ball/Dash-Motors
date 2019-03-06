@@ -19,32 +19,43 @@ print(df)
 app.layout = html.Div([
 	html.H1(children='Dash Motors!'),
 
+	html.Div(children='This application visualizes 3 different aspects of the design of 32 car models, and shows how they relate to each other in a 3D scatter plot.'),
+
 	html.Div(children='''
 		Select a parameter from the drop-down and it will be visualized for you!
-		'''),
+		''', className="Instruction"),
 
 	html.Div([
 		dcc.Dropdown(
 			id='drop-down',
 			options=[
+			{'label': "Full 3D Scatter", 'value': 'fullscat'},
 			{'label': 'Miles/Gallon', 'value': 'mpg'},
 			{'label': 'Horsepower', 'value': 'hp'},
 			{'label': 'Weight', 'value': 'wt'},
-			{'label': "Full 3D Scatter", 'value': 'fullscat'},
 			],
 		),
 	]),
 
-	dcc.Graph(id='Car Graph')
+	dcc.Graph(id='Car Graph'),
+	dcc.RadioItems(
+		id='colour-radial',
+		options=[
+		{'label': 'Miles/Gallon', 'value': 'mpg'},
+		{'label': 'Horsepower', 'value': 'hp'},
+		{'label': 'Weight', 'value': 'wt'},
+		]
+		)
 ])
 
 
 #Make the graph
 @app.callback(
 	Output(component_id='Car Graph', component_property='figure'), 
-	[Input(component_id='drop-down', component_property='value')]
+	[Input(component_id='drop-down', component_property='value'),
+	Input(component_id='colour-radial', component_property='value')]
 )
-def update_figure(value):
+def update_figure(value, colour):
 	#isolate for the selected parameter
 	if (value == 'fullscat'):
 		df_slices = df[['model', 'mpg', 'hp', 'wt']]
@@ -55,7 +66,12 @@ def update_figure(value):
 				y=df_slices.mpg,
 				z=df_slices.hp,
 				text=df_slices.model,
-				mode='markers'
+				mode='markers',
+				marker=dict(
+					color=df_slices[colour],
+					colorscale='Viridis',
+					opacity=0.8
+					)
 				)],
 			'layout': go.Layout(
 				xaxis={'title': 'weight'},
@@ -77,9 +93,9 @@ def update_figure(value):
 				yaxis={
 					'title': value
 				}
+				
 			)
 		}
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
