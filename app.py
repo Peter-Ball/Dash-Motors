@@ -5,6 +5,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import plotly.plotly as py
 import plotly.graph_objs as go
 
 #setup
@@ -29,6 +30,7 @@ app.layout = html.Div([
 			{'label': 'Miles/Gallon', 'value': 'mpg'},
 			{'label': 'Horsepower', 'value': 'hp'},
 			{'label': 'Weight', 'value': 'wt'},
+			{'label': "Full 3D Scatter", 'value': 'fullscat'},
 			],
 		),
 	]),
@@ -44,22 +46,39 @@ app.layout = html.Div([
 )
 def update_figure(value):
 	#isolate for the selected parameter
-	df_segment = df[['model', value]]
-	
-	return{
-		'data': [go.Bar(
-			x=df_segment['model'].tolist(),
-			y=df_segment[value].tolist()
-			)],
-		'layout': go.Layout(
-			xaxis={
-				'title': 'Model'
-			},
-			yaxis={
-				'title': value
-			}
-		)
-	}
+	if (value == 'fullscat'):
+		df_slices = df[['model', 'mpg', 'hp', 'wt']]
+
+		return{
+			'data': [go.Scatter3d(
+				x=df_slices.wt,
+				y=df_slices.mpg,
+				z=df_slices.hp,
+				text=df_slices.model,
+				mode='markers'
+				)],
+			'layout': go.Layout(
+				xaxis={'title': 'weight'},
+				yaxis={'title': 'Miles/Gallon'}
+			)
+		}
+	else:
+		df_segment = df[['model', value]]
+		
+		return{
+			'data': [go.Bar(
+				x=df_segment['model'].tolist(),
+				y=df_segment[value].tolist()
+				)],
+			'layout': go.Layout(
+				xaxis={
+					'title': 'Model'
+				},
+				yaxis={
+					'title': value
+				}
+			)
+		}
 
 
 if __name__ == '__main__':
