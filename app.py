@@ -7,7 +7,7 @@ import dash_html_components as html
 
 app = dash.Dash(__name__)
 
-df = pd.read_csv("mtcars.tsv", sep='t')
+df = pd.read_csv("mtcars.tsv", sep='\t', skiprows=4)
 
 app.layout = html.Div([
 	html.H1(children='Dash Motors!'),
