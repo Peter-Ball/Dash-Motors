@@ -34,17 +34,22 @@ app.layout = html.Div([
 			{'label': 'Horsepower', 'value': 'hp'},
 			{'label': 'Weight', 'value': 'wt'},
 			],
+			value='fullscat'
 		),
 	]),
 
 	dcc.Graph(id='Car Graph'),
+
+	html.Div(children='Colour switcher:'),
+
 	dcc.RadioItems(
 		id='colour-radial',
 		options=[
 		{'label': 'Miles/Gallon', 'value': 'mpg'},
 		{'label': 'Horsepower', 'value': 'hp'},
 		{'label': 'Weight', 'value': 'wt'},
-		]
+		],
+		value='mpg'
 		)
 ])
 
@@ -69,6 +74,7 @@ def update_figure(value, colour):
 				mode='markers',
 				marker=dict(
 					color=df_slices[colour],
+					colorbar=dict(title=colour),
 					colorscale='Viridis',
 					opacity=0.8
 					)
@@ -80,11 +86,12 @@ def update_figure(value, colour):
 		}
 	else:
 		df_segment = df[['model', value]]
-		
+
 		return{
 			'data': [go.Bar(
 				x=df_segment['model'].tolist(),
-				y=df_segment[value].tolist()
+				y=df_segment[value].tolist(),
+				marker=dict(color='#A387FF')
 				)],
 			'layout': go.Layout(
 				xaxis={
